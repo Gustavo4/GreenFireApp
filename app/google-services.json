@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "12093492787",
+    "firebase_url": "https://apptcc-24a6d.firebaseio.com",
+    "project_id": "apptcc-24a6d",
+    "storage_bucket": "apptcc-24a6d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:12093492787:android:902119b7ecf5f92a181d46",
+        "android_client_info": {
+          "package_name": "com.unip.oitavosemestre.tcc.apptcc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "12093492787-ahj7t3lhqvg6spk1riun3p4mt79fu12q.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.unip.oitavosemestre.tcc.apptcc",
+            "certificate_hash": "159b64a56dc63aa66b32fcef2b89314a1c77d595"
+          }
+        },
+        {
+          "client_id": "12093492787-f9isu1qbfcrn3p5bafbj4d7o8nmnttgm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcS-h2HJ2-Rw7IvEbjCUzqMN66G-BQd0w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "12093492787-f9isu1qbfcrn3p5bafbj4d7o8nmnttgm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

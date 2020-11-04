@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_principal">
+
+    <fragment
+        android:id="@+id/nav_principal"
+        android:name="com.unip.oitavosemestre.tcc.apptcc.activity.ui.principal.PrincipalFragment"
+        android:label="@string/menu_principal"
+        tools:layout="@layout/fragment_principal" />
+
+    <fragment
+        android:id="@+id/nav_abrir_chamado"
+        android:name="com.unip.oitavosemestre.tcc.apptcc.activity.ui.abrirChamado.AbrirChamadoFragment"
+        android:label="@string/menu_abrir_chamado"
+        tools:layout="@layout/fragment_abrir_chamado" />
+
+    <fragment
+        android:id="@+id/nav_registros"
+        android:name="com.unip.oitavosemestre.tcc.apptcc.activity.ui.registro.RegistroFragment"
+        android:label="@string/menu_registros"
+        tools:layout="@layout/fragment_registro" />
+
+    <fragment
+        android:id="@+id/nav_equipe"
+        android:name="com.unip.oitavosemestre.tcc.apptcc.activity.ui.equipe.EquipeFragment"
+        android:label="@string/menu_equipe"
+        tools:layout="@layout/fragment_equipe" />
+
+    <fragment
+        android:id="@+id/nav_sobre"
+        android:name="com.unip.oitavosemestre.tcc.apptcc.activity.ui.sobre.SobreFragment"
+        android:label="@string/menu_sobre"
+        tools:layout="@layout/fragment_sobre" />
+
+
+</navigation>
