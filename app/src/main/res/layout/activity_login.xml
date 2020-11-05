@@ -59,6 +59,7 @@
         android:layout_marginRight="8dp"
         android:text="@string/botao_logar"
         android:theme="@style/botaoPadrao"
+        android:background="@drawable/bg_button_image"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_login_senha" />
@@ -75,6 +76,7 @@
         android:text="@string/texto_cadastre"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:textColor="@android:color/white"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
