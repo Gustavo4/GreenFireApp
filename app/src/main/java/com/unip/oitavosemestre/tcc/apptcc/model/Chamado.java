@@ -1,14 +1,18 @@
 package com.unip.oitavosemestre.tcc.apptcc.model;
 
+import android.net.Uri;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Exclude;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
 
 public class Chamado {
 
     private String id;
     private String nomeUsuario;
-    private String imagem;
+    private Uri imagem;
     private String localizacao;
     private Situacao situacao;
     private String descricao;
@@ -38,11 +42,11 @@ public class Chamado {
         this.nomeUsuario = nomeUsuario;
     }
 
-    public String getImagem() {
+    public Uri getImagem() {
         return imagem;
     }
 
-    public void setImagem(String imagem) {
+    public void setImagem(Uri imagem) {
         this.imagem = imagem;
     }
 

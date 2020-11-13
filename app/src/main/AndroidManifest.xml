@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.unip.oitavosemestre.tcc.apptcc">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <uses-sdk tools:overrideLibrary="com.google.firebase.auth"/>
+
 
     <application
         android:allowBackup="true"
@@ -31,6 +35,9 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
+        <service android:name=".helper.BuscarEndereco"
+            android:exported="false" />
+
         <activity
             android:name=".activity.CadastroUsuarioActivity"
             android:label="@string/title_activity_cadastro_usuario"
@@ -39,7 +46,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.unip.oitavosemestre.tcc.apptcc.activity.MainActivity" />
         </activity>
-
     </application>
 
 </manifest>

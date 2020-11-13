@@ -2,7 +2,7 @@ package com.unip.oitavosemestre.tcc.apptcc.model;
 
 public enum Situacao {
 
-    Neutralizado(1), Controlada(2), ForaDeControle(3);
+    Neutralizado(0), Controlado(1), Perigoso(2);
 
     private final int valor;
 

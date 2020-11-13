@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
@@ -13,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -71,6 +75,27 @@ public class LoginActivity extends AppCompatActivity {
             });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        int errorCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        switch (errorCode){
+            case ConnectionResult.SERVICE_MISSING:
+            case ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED:
+            case ConnectionResult.SERVICE_DISABLED:
+                GoogleApiAvailability.getInstance().getErrorDialog(this, errorCode, 0, new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        finish();
+                    }
+                }).show();
+                break;
+            case ConnectionResult.SUCCESS:
+                Log.d("Sucesso", "Google-Api-services - Ok");
+                break;
+        }
+    }
+
     public void abrirCadastroUsuario(View view){
 
         Intent intent = new Intent(LoginActivity.this, CadastroUsuarioActivity.class);
@@ -85,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao(getApplicationContext());
         autenticacao.signInWithEmailAndPassword(
                 usuario.getEmail(),
                 usuario.getSenha()
@@ -138,7 +163,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void verificarUsuarioLogado(){
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao(getApplicationContext());
         if( autenticacao.getCurrentUser() != null ){
             abrirTelaPrincipal();
         }

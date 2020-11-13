@@ -47,12 +47,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onRestart() {
-        super.onRestart();
-        deslogarUsuario();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -68,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao();
+        autenticacao = ConfiguracaoFirebase.getFirebaseAutenticacao(getApplicationContext());
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -94,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
         if ( usuarioLogado != null) {
             email.setText(usuarioLogado.getEmail());
         }
-
 
 
     }
@@ -134,12 +127,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        deslogarUsuario();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
         deslogarUsuario();
     }
 

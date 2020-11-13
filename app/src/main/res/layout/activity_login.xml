@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30AA9A"
+    android:background="@color/colorPrimary"
     android:gravity="center_vertical|center_horizontal"
     android:theme="@style/AppTheme.NoActionBar"
     tools:context="com.unip.oitavosemestre.tcc.apptcc.activity.LoginActivity">
@@ -22,6 +22,8 @@
         android:ems="10"
         android:hint="Digite seu e-mail"
         android:inputType="textEmailAddress"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
@@ -41,6 +43,8 @@
         android:ems="10"
         android:hint="Digite sua senha"
         android:inputType="textPassword"
+        android:textColor="@android:color/white"
+        android:textColorHint="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_login_email" />
@@ -57,9 +61,10 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="@string/botao_logar"
-        android:theme="@style/botaoPadrao"
         android:background="@drawable/bg_button_image"
+        android:text="@string/botao_logar"
+        android:textColor="@android:color/white"
+        android:theme="@style/botaoPadrao"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edit_login_senha" />

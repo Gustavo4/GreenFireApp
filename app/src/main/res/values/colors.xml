@@ -3,4 +3,5 @@
     <color name="colorPrimary">#30AA9A</color>
     <color name="colorPrimaryDark">#009688</color>
     <color name="colorAccent">#378B39</color>
+    <color name="corDeFundoApp">#f0f8ff</color>
 </resources>
