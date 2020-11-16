@@ -67,7 +67,7 @@ public class PrincipalFragment extends Fragment {
         adapter = new ChamadoAdapter(getContext(), chamados );
         listView.setAdapter( adapter );
 
-        //Recuperar contatos do firebase
+        //Recuperar chamados do firebase
         Preferencias preferencias = new Preferencias(getActivity());
         String idUsuario = preferencias.getIdentificador();
 
@@ -76,8 +76,7 @@ public class PrincipalFragment extends Fragment {
 
 
 
-
-        //Listener para recuperar contatos
+        //Listener para recuperar chamados
         valueEventListenerChamados = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -85,7 +84,7 @@ public class PrincipalFragment extends Fragment {
                 //Limpar lista
                 chamados.clear();
 
-                //Listar contatos
+                //Listar chamados
                 for (DataSnapshot dados: dataSnapshot.getChildren() ){
 
                     Chamado chamado = dados.getValue( Chamado.class );
