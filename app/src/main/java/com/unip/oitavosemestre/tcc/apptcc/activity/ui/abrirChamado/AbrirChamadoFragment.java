@@ -3,10 +3,8 @@ package com.unip.oitavosemestre.tcc.apptcc.activity.ui.abrirChamado;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -22,11 +20,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,39 +34,37 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.unip.oitavosemestre.tcc.apptcc.R;
 import com.unip.oitavosemestre.tcc.apptcc.activity.MainActivity;
+import com.unip.oitavosemestre.tcc.apptcc.activity.ui.principal.PrincipalFragment;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
-import com.unip.oitavosemestre.tcc.apptcc.helper.BuscarEndereco;
-import com.unip.oitavosemestre.tcc.apptcc.helper.ConstantsFetchAddressService;
+import com.unip.oitavosemestre.tcc.apptcc.helper.Base64Custom;
+import com.unip.oitavosemestre.tcc.apptcc.helper.Preferencias;
+import com.unip.oitavosemestre.tcc.apptcc.model.Chamado;
 import com.unip.oitavosemestre.tcc.apptcc.model.Situacao;
+import com.unip.oitavosemestre.tcc.apptcc.model.Usuario;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -81,14 +76,29 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
     private Button buttonImagem;
     private Button btAbrirChamado;
-    private Uri localImagemSelecionada;
-    private ImageView imageChamado;
     private Spinner situacao;
-    private EditText descricao;
-    private FusedLocationProviderClient client;
+    private EditText etDescricao;
     private ImageButton icLocalizacao;
     private TextView txtLocalizao;
+    private ImageView imageChamado;
+
+    private Uri localImagemSelecionada;
+    private String imagemUploaded;
+
+    private FusedLocationProviderClient client;
     private LocationManager locationManager;
+
+    private DatabaseReference firebase;
+    private FirebaseUser usuarioLogado = FirebaseAuth.getInstance().getCurrentUser();
+    private FirebaseAuth autenticacao;
+
+    private Chamado chamado;
+    private String localizacao;
+    private Situacao situacoes;
+    private String descricao;
+    private String nomeUsuario;
+    private String idUsuarioLogado;
+
 //    private AddressResultReceiver resultReceiver;
 
     public AbrirChamadoFragment() {
@@ -100,7 +110,6 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-
         View view = inflater.inflate(R.layout.fragment_abrir_chamado, container, false);
 
         buttonImagem = view.findViewById(R.id.buttonFoto);
@@ -109,10 +118,18 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
         situacao = view.findViewById(R.id.spSituacao);
         icLocalizacao = view.findViewById(R.id.icLocalizacao);
         txtLocalizao = view.findViewById(R.id.txtLocalizacao);
+        etDescricao = view.findViewById(R.id.textDescricao);
+
+        Preferencias preferencias = new Preferencias(getContext());
+        nomeUsuario = preferencias.getNome();
+
+        descricao = etDescricao.getText().toString();
 
         txtLocalizao.setMovementMethod( new ScrollingMovementMethod());
 
         situacao.setAdapter(new ArrayAdapter<Situacao>(getContext(), simple_dropdown_item_1line, Situacao.values()));
+
+        situacoes = (Situacao) situacao.getSelectedItem();
 
         buttonImagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,10 +138,64 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
             }
         });
 
+        ValueEventListener valueEventListenerUsuario = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                // Recupera mensagens
+                for (DataSnapshot dados : dataSnapshot.getChildren()) {
+                    Usuario usuario = dados.getValue(Usuario.class);
+
+                    idUsuarioLogado = autenticacao.getCurrentUser().getEmail();
+
+                    if (usuario.getEmail().equals(idUsuarioLogado)) {
+                        nomeUsuario = usuario.getNome();
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        };
+
         btAbrirChamado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                salvarChamado();
+                chamado = new Chamado();
+                chamado.setId(Base64Custom.codificarBase64(usuarioLogado.getEmail()));
+                if ( nomeUsuario != null){
+                    chamado.setNomeUsuario(nomeUsuario);
+                }
+                chamado.setSituacao(situacoes);
+                chamado.setImagem(imagemUploaded);
+
+                if (etDescricao.getText().toString() == null || etDescricao.getText().toString().isEmpty() || localizacao == null || localizacao.isEmpty()){
+                    Toast.makeText(getContext(), "Preencha todos os campos!", Toast.LENGTH_LONG).show();
+                } else {
+                    chamado.setDescricao(etDescricao.getText().toString());
+                    chamado.setLocalizacao(localizacao);
+
+                    Boolean retornoSalvarChamado = chamado.salvar(chamado);
+
+                    if (!retornoSalvarChamado) {
+                        Toast.makeText(getContext(), "Erro ao salvar chamado", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Chamado aberto com sucesso!", Toast.LENGTH_SHORT).show();
+
+                        PrincipalFragment principalFragment = new PrincipalFragment();
+                        FragmentManager fragmentManager = getFragmentManager();
+                        fragmentManager.popBackStackImmediate();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        transaction.replace(R.id.nav_host_fragment, principalFragment, principalFragment.getTag())
+                                .addToBackStack(null).commit();
+                    }
+
+                }
+
+
             }
         });
 
@@ -138,6 +209,7 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
         client = LocationServices.getFusedLocationProviderClient(getActivity());
 
+        firebase = ConfiguracaoFirebase.getFirebase();
 //        resultReceiver = new AddressResultReceiver(null);
         return view;
 
@@ -154,7 +226,6 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
         try {
@@ -165,11 +236,12 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
             Toast.makeText(getContext(), "Localização: " + address, Toast.LENGTH_SHORT).show();
 
             txtLocalizao.setText(address);
-
+            localizacao = address;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -217,7 +289,7 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
                 StorageMetadata storageMetadata = new StorageMetadata();
 
-                UploadTask uploadTask = ref.putBytes(img);
+                final UploadTask uploadTask = ref.putBytes(img);
 
                 btAbrirChamado.setEnabled(false);
                 buttonImagem.setEnabled(false);
@@ -228,7 +300,9 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
                         Log.i("Upload Image", "Image uploaded");
                         Toast.makeText(getContext(), "Sucesso ao carregar " + localImagemSelecionada, Toast.LENGTH_SHORT).show();
 
-                        btAbrirChamado.setEnabled(true);
+                        Task<Uri> uri = ref.getDownloadUrl();
+                        imagemUploaded = uri.getResult().toString();
+
                     }
                 })
                         .addOnFailureListener(new OnFailureListener() {
@@ -252,9 +326,6 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
     }
 
-    private void salvarChamado(){
-
-    }
 
     @Override
     public void onResume() {

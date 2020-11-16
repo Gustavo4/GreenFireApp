@@ -20,7 +20,7 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_principal">Incêndios Detectados</string>
-    <string name="menu_abrir_chamado">Abrir chamado</string>
+    <string name="menu_abrir_chamado">Abrir Chamado</string>
     <string name="menu_registros">Registros</string>
     <string name="menu_equipe">Equipe</string>
     <string name="menu_sobre">Sobre</string>

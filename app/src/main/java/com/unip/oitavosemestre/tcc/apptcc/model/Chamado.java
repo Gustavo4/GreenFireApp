@@ -1,31 +1,34 @@
 package com.unip.oitavosemestre.tcc.apptcc.model;
 
-import android.net.Uri;
-
+import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.Exclude;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
 
 public class Chamado {
 
     private String id;
     private String nomeUsuario;
-    private Uri imagem;
+    private String imagem;
     private String localizacao;
     private Situacao situacao;
     private String descricao;
+    private DatabaseReference firebase = ConfiguracaoFirebase.getFirebase();
 
     public Chamado() {
     }
 
-    public void salvar(){
-        DatabaseReference referenciaFirebase = ConfiguracaoFirebase.getFirebase();
-        referenciaFirebase.child("chamado").child( getId() ).setValue( this );
+    public boolean salvar(Chamado chamado){
+        try {
+            firebase.child("chamado").child( getId() ).push().setValue( chamado );
+
+            return true;
+        } catch (DatabaseException e){
+            e.printStackTrace();
+
+            return false;
+        }
     }
 
-    @Exclude
     public String getId() {
         return id;
     }
@@ -42,11 +45,11 @@ public class Chamado {
         this.nomeUsuario = nomeUsuario;
     }
 
-    public Uri getImagem() {
+    public String getImagem() {
         return imagem;
     }
 
-    public void setImagem(Uri imagem) {
+    public void setImagem(String imagem) {
         this.imagem = imagem;
     }
 
