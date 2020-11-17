@@ -3,6 +3,7 @@ package com.unip.oitavosemestre.tcc.apptcc.activity.ui.abrirChamado;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,37 +24,41 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.StorageMetadata;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 import com.unip.oitavosemestre.tcc.apptcc.R;
-import com.unip.oitavosemestre.tcc.apptcc.activity.MainActivity;
 import com.unip.oitavosemestre.tcc.apptcc.activity.ui.principal.PrincipalFragment;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
 import com.unip.oitavosemestre.tcc.apptcc.helper.Base64Custom;
@@ -63,6 +68,7 @@ import com.unip.oitavosemestre.tcc.apptcc.model.Situacao;
 import com.unip.oitavosemestre.tcc.apptcc.model.Usuario;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -82,7 +88,7 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
     private TextView txtLocalizao;
     private ImageView imageChamado;
 
-    private Uri localImagemSelecionada;
+    private Uri imageUri;
     private String imagemUploaded;
 
     private FusedLocationProviderClient client;
@@ -91,6 +97,9 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
     private DatabaseReference firebase;
     private FirebaseUser usuarioLogado = FirebaseAuth.getInstance().getCurrentUser();
     private FirebaseAuth autenticacao;
+    private StorageReference storageReference;
+    private StorageTask mUploadTask;
+
 
     private Chamado chamado;
     private String localizacao;
@@ -127,9 +136,23 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
         txtLocalizao.setMovementMethod( new ScrollingMovementMethod());
 
-        situacao.setAdapter(new ArrayAdapter<Situacao>(getContext(), simple_dropdown_item_1line, Situacao.values()));
+        ArrayAdapter<Situacao> itemsArray=new ArrayAdapter<Situacao>(getContext(),android.R.layout.simple_spinner_dropdown_item, Situacao.values());
+        situacao.setAdapter(itemsArray);
 
-        situacoes = (Situacao) situacao.getSelectedItem();
+        situacao.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+
+                Situacao selectedItem = Situacao.valueOf(String.valueOf(adapterView.getItemAtPosition(i)));
+
+                situacoes = selectedItem;
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
 
         buttonImagem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -185,7 +208,15 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
                     } else {
                         Toast.makeText(getContext(), "Chamado aberto com sucesso!", Toast.LENGTH_SHORT).show();
 
+                        /*String key = chamado.getKey();
+                        Log.i("Key", chamado.getKey());*/
+
                         PrincipalFragment principalFragment = new PrincipalFragment();
+
+                      /*  Bundle bundle = new Bundle();
+                        bundle.putString("key", key);
+                        principalFragment.setArguments(bundle);*/
+
                         FragmentManager fragmentManager = getFragmentManager();
                         fragmentManager.popBackStackImmediate();
                         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -264,68 +295,71 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
 
     }
 
+    private String getFileExtension(Uri uri) {
+        ContentResolver cR = getActivity().getContentResolver();
+        MimeTypeMap mime = MimeTypeMap.getSingleton();
+        return mime.getExtensionFromMimeType(cR.getType(uri));
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if ((requestCode == 0) && (resultCode == RESULT_OK) && data != null){
-            localImagemSelecionada = data.getData();
+        if ((requestCode == 0) && (resultCode == RESULT_OK) && data != null) {
+            imageUri = data.getData();
 
             try {
-                Bitmap imagem = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), localImagemSelecionada);
+                Bitmap imagem = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 imagem.compress(Bitmap.CompressFormat.JPEG, 75, stream);
                 byte[] img = stream.toByteArray();
 
-                //salvando imagem com nome diferente, baseado na data
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat("ddmmaaaammss");
-                String nomeImagem = simpleDateFormat.format( new Date() );
+                String newNameImg = simpleDateFormat.format( new Date() );
+                String path = "imagens/" + newNameImg + ".jpeg";
 
-                String path = "imagens/" + nomeImagem + ".jpeg";
+                if (imageUri != null) {
+                    storageReference = ConfiguracaoFirebase.getStorageReference(path);
 
-                //fazendo uploado da imagem
-                final StorageReference ref = ConfiguracaoFirebase.getStorageReference(path);
+                    mUploadTask = storageReference.putFile(imageUri)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                StorageMetadata storageMetadata = new StorageMetadata();
+                                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                        @Override
+                                        public void onSuccess(Uri uri) {
+                                            Uri downloadUrl = uri;
+                                            imagemUploaded = downloadUrl.toString();
+                                            Log.i("Download Img", "URL de download: " + imagemUploaded);
+                                        }
+                                    });
 
-                final UploadTask uploadTask = ref.putBytes(img);
+                                    Toast.makeText(getContext(), "Sucesso ao fazer Upload!", Toast.LENGTH_LONG).show();
+                                }
 
-                btAbrirChamado.setEnabled(false);
-                buttonImagem.setEnabled(false);
-
-                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                        Log.i("Upload Image", "Image uploaded");
-                        Toast.makeText(getContext(), "Sucesso ao carregar " + localImagemSelecionada, Toast.LENGTH_SHORT).show();
-
-                        Task<Uri> uri = ref.getDownloadUrl();
-                        imagemUploaded = uri.getResult().toString();
-
-                    }
-                })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.i("Failed Image", "Image failed upload");
-                                Toast.makeText(getContext(), "Falha ao carregar imagem", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(getContext(), "Falha ao fazer upload", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                } else {
+                    Toast.makeText(getContext(), "Nenhum item selecionado", Toast.LENGTH_SHORT).show();
+                }
 
 
                 imageChamado.setImageDrawable(new BitmapDrawable(imagem));
                 buttonImagem.setAlpha(0);
 
-            } catch (IOException e) {
-                Log.i("Imagem Incêndio", "Não foi possível enviar a imagem.");
+
+            }catch (Exception e){
                 e.printStackTrace();
             }
 
         }
-
     }
-
 
     @Override
     public void onResume() {

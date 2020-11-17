@@ -2,7 +2,11 @@ package com.unip.oitavosemestre.tcc.apptcc.model;
 
 import com.google.firebase.database.DatabaseException;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Exclude;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Chamado {
 
@@ -12,15 +16,24 @@ public class Chamado {
     private String localizacao;
     private Situacao situacao;
     private String descricao;
+    private String key;
     private DatabaseReference firebase = ConfiguracaoFirebase.getFirebase();
 
     public Chamado() {
     }
 
+    public Chamado(String id, String nomeUsuario, String imagem, String localizacao, Situacao situacao, String descricao) {
+        this.id = id;
+        this.nomeUsuario = nomeUsuario;
+        this.imagem = imagem;
+        this.localizacao = localizacao;
+        this.situacao = situacao;
+        this.descricao = descricao;
+    }
+
     public boolean salvar(Chamado chamado){
         try {
             firebase.child("chamado").child( getId() ).push().setValue( chamado );
-
             return true;
         } catch (DatabaseException e){
             e.printStackTrace();
@@ -77,10 +90,32 @@ public class Chamado {
         this.descricao = descricao;
     }
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
     public String toString() {
         return "Chamado Incêndio Aberto" +
                 "Aberto por:" + nomeUsuario + '\'' +
                 ", Situação atual: " + situacao;
     }
+
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("id", id);
+        result.put("nomeUsuario", nomeUsuario);
+        result.put("imagem", imagem);
+        result.put("localizacao", localizacao);
+        result.put("situacao", situacao);
+        result.put("descricao", descricao);
+
+        return result;
+    }
+
 }

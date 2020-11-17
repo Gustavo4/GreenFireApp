@@ -14,7 +14,8 @@
         android:layout_width="wrap_content"
         android:layout_height="200dp"
         android:layout_gravity="center"
-
+        app:srcCompat="@drawable/ic_launcher_background"
+        android:background="@drawable/edit_border"
         />
 
     <TextView
@@ -23,6 +24,7 @@
         android:layout_height="wrap_content"
         android:hint="Localização"
         android:paddingBottom="15dp"
+        android:paddingTop="15dp"
         android:textSize="18sp"
         android:textStyle="italic" />
 
@@ -51,7 +53,7 @@
         android:textSize="18sp" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/bt_fechar_chamado"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

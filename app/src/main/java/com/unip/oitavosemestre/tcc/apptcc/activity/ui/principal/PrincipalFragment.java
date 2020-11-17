@@ -4,6 +4,7 @@ package com.unip.oitavosemestre.tcc.apptcc.activity.ui.principal;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -16,14 +17,21 @@ import android.widget.ListView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.unip.oitavosemestre.tcc.apptcc.R;
+import com.unip.oitavosemestre.tcc.apptcc.activity.LoginActivity;
 import com.unip.oitavosemestre.tcc.apptcc.adapter.ChamadoAdapter;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
 import com.unip.oitavosemestre.tcc.apptcc.helper.Preferencias;
 import com.unip.oitavosemestre.tcc.apptcc.model.Chamado;
+import com.unip.oitavosemestre.tcc.apptcc.model.Situacao;
+import com.unip.oitavosemestre.tcc.apptcc.model.Usuario;
 
 import java.util.ArrayList;
+
+import static com.unip.oitavosemestre.tcc.apptcc.model.Situacao.Controlado;
+import static com.unip.oitavosemestre.tcc.apptcc.model.Situacao.Perigoso;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -35,6 +43,7 @@ public class PrincipalFragment extends Fragment {
     private ArrayList<Chamado> chamados;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListenerChamados;
+    private Usuario usuario;
 
 
     public PrincipalFragment() {
@@ -71,37 +80,38 @@ public class PrincipalFragment extends Fragment {
         Preferencias preferencias = new Preferencias(getActivity());
         String idUsuario = preferencias.getIdentificador();
 
-        firebase = ConfiguracaoFirebase.getFirebase()
+       /* Bundle arguments = getArguments();
+        String key = arguments.getString("key");*/
+
+
+                firebase = ConfiguracaoFirebase.getFirebase()
                     .child("chamado").child(idUsuario);
 
+            valueEventListenerChamados = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
+                    //Limpar lista
+                    chamados.clear();
 
-        //Listener para recuperar chamados
-        valueEventListenerChamados = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+                    //Listar chamados
+                    for (DataSnapshot dados : dataSnapshot.getChildren()) {
 
-                //Limpar lista
-                chamados.clear();
+                        Chamado chamado =  dados.getValue(Chamado.class);
+                        chamados.add(chamado);
 
-                //Listar chamados
-                for (DataSnapshot dados: dataSnapshot.getChildren() ){
+                    }
 
-                    Chamado chamado = dados.getValue( Chamado.class );
-                    chamados.add( chamado);
-
+                    adapter.notifyDataSetChanged();
 
                 }
 
-                adapter.notifyDataSetChanged();
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
+                }
+            };
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        };
 
      /*   listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
