@@ -14,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,6 +25,7 @@ import com.unip.oitavosemestre.tcc.apptcc.R;
 import com.unip.oitavosemestre.tcc.apptcc.activity.LoginActivity;
 import com.unip.oitavosemestre.tcc.apptcc.adapter.ChamadoAdapter;
 import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
+import com.unip.oitavosemestre.tcc.apptcc.helper.Base64Custom;
 import com.unip.oitavosemestre.tcc.apptcc.helper.Preferencias;
 import com.unip.oitavosemestre.tcc.apptcc.model.Chamado;
 import com.unip.oitavosemestre.tcc.apptcc.model.Situacao;
@@ -43,7 +46,9 @@ public class PrincipalFragment extends Fragment {
     private ArrayList<Chamado> chamados;
     private DatabaseReference firebase;
     private ValueEventListener valueEventListenerChamados;
-    private Usuario usuario;
+    private String idUsuarioAuth;
+    private FirebaseUser usuarioLogado = FirebaseAuth.getInstance().getCurrentUser();
+
 
 
     public PrincipalFragment() {
@@ -78,15 +83,19 @@ public class PrincipalFragment extends Fragment {
 
         //Recuperar chamados do firebase
         Preferencias preferencias = new Preferencias(getActivity());
-        String idUsuario = preferencias.getIdentificador();
+        String idUsuarioPreferencias = preferencias.getIdentificador();
 
        /* Bundle arguments = getArguments();
         String key = arguments.getString("key");*/
 
-
-                firebase = ConfiguracaoFirebase.getFirebase()
-                    .child("chamado").child(idUsuario);
-
+       if (idUsuarioPreferencias == null){
+           idUsuarioAuth = Base64Custom.codificarBase64(usuarioLogado.getEmail());
+           firebase = ConfiguracaoFirebase.getFirebase()
+                   .child("chamado").child(idUsuarioAuth);
+       } else {
+           firebase = ConfiguracaoFirebase.getFirebase()
+                   .child("chamado").child(idUsuarioPreferencias);
+       }
             valueEventListenerChamados = new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
