@@ -11,6 +11,9 @@ import android.view.ViewGroup;
 
 import com.unip.oitavosemestre.tcc.apptcc.R;
 
+import mehdi.sakout.aboutpage.AboutPage;
+import mehdi.sakout.aboutpage.Element;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -25,8 +28,37 @@ public class SobreFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sobre, container, false);
+
+        String descricao = "O app GreenFire tem como objetivo ajudar no combate " +
+                "aos incêndios florestais, proporcionando uma comunicação rápida " +
+                "da localização de um incêndio. " +
+                "Desta forma, os combatentes que utilizam nosso aplicativo "+
+                "podem reagir rapidamente contra uma ameaça ao nosso meio ambiente. ";
+
+        Element versao = new Element();
+        versao.setTitle( "Versão 1.0" );
+
+        return new AboutPage( getActivity() )
+                .setImage( R.drawable.logo )
+                .setDescription( descricao )
+
+                .addGroup("Entre em contato")
+                .addEmail("greenfireu8@gmail.com", "Envie um e-mail")
+                .addWebsite("https://www.google.com/", "Acesse nosso site")
+
+                .addGroup("Redes sociais")
+                /*.addFacebook("jamiltondamasceno", "Facebook")
+                .addInstagram("jamiltondamasceno", "Instagram")
+                .addTwitter("jamiltondamasceno", "Twitter(")
+                .addYoutube("jamiltondamasceno", "Youtube")*/
+                .addGitHub("gustavo4", "GitHub")
+//                .addPlayStore("com.facebook.katana", "Download App")
+
+                .addItem( versao )
+
+                .create();
+        //return inflater.inflate(R.layout.fragment_sobre, container, false);
+
     }
 
 }

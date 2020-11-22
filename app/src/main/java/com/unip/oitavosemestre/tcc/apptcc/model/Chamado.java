@@ -33,7 +33,8 @@ public class Chamado {
 
     public boolean salvar(Chamado chamado){
         try {
-            firebase.child("chamado").child( getId() ).push().setValue( chamado );
+            key = firebase.push().getKey();
+            firebase.child("chamado").child(key).setValue( chamado );
             return true;
         } catch (DatabaseException e){
             e.printStackTrace();
