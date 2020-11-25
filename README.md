@@ -1,5 +1,5 @@
-# AppTcc
-Aplicativo TCC
+# GreenFire App
+Aplicativo GreenFire desenvolvido para o TCC do curso Ciência da Computação no 8° Semestre
 
 INSTALAÇÃO:
 
