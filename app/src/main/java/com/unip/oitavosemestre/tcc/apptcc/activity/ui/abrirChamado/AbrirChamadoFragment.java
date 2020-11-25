@@ -200,6 +200,7 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
                 } else {
                     chamado.setDescricao(etDescricao.getText().toString());
                     chamado.setLocalizacao(localizacao);
+                    chamado.setStatus(Chamado.Status.Aberto);
 
                     Boolean retornoSalvarChamado = chamado.salvar(chamado);
 
@@ -207,7 +208,6 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
                         Toast.makeText(getContext(), "Erro ao salvar chamado", Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(getContext(), "Chamado aberto com sucesso!", Toast.LENGTH_SHORT).show();
-
                         /*String key = chamado.getKey();
                         Log.i("Key", chamado.getKey());*/
 
@@ -374,17 +374,6 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 

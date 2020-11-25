@@ -73,8 +73,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             public void onClick(View view) {
 
                 getLocation();
-                Snackbar.make(view, "Sua localização atual é: " + localizacao, Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                if (localizacao != null) {
+                    Snackbar.make(view, "Sua localização atual é: " + localizacao, Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                } else {
+                    Snackbar.make(view, "Carregando localização atual... Por favor, pressione novamente", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
             }
         });
 

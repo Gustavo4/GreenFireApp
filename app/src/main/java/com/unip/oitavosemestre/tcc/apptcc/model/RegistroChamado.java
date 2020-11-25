@@ -8,9 +8,9 @@ import com.unip.oitavosemestre.tcc.apptcc.config.ConfiguracaoFirebase;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.unip.oitavosemestre.tcc.apptcc.model.Chamado.Status.*;
+import static com.unip.oitavosemestre.tcc.apptcc.model.Chamado.Status.Aberto;
 
-public class Chamado {
+public class RegistroChamado {
 
     private String id;
     private String nomeUsuario;
@@ -19,14 +19,13 @@ public class Chamado {
     private Situacao situacao;
     private String descricao;
     private String key;
-    private Status status;
     private String usuarioEncerramento;
     private DatabaseReference firebase = ConfiguracaoFirebase.getFirebase();
 
-    public Chamado() {
+    public RegistroChamado() {
     }
 
-    public Chamado(String id, String nomeUsuario, String imagem, String localizacao, Situacao situacao, String descricao, String key, Status status, String usuarioEncerramento) {
+    public RegistroChamado(String id, String nomeUsuario, String imagem, String localizacao, Situacao situacao, String descricao, String key, String usuarioEncerramento) {
         this.id = id;
         this.nomeUsuario = nomeUsuario;
         this.imagem = imagem;
@@ -34,14 +33,13 @@ public class Chamado {
         this.situacao = situacao;
         this.descricao = descricao;
         this.key = key;
-        this.status = status;
         this.usuarioEncerramento = usuarioEncerramento;
     }
 
-    public boolean salvar(Chamado chamado){
+    public boolean salvar(RegistroChamado registro){
         try {
             key = firebase.push().getKey();
-            firebase.child("chamado").child(key).setValue( chamado );
+            firebase.child("registroChamado").child(key).setValue( registro );
             return true;
         } catch (DatabaseException e){
             e.printStackTrace();
@@ -106,21 +104,7 @@ public class Chamado {
         this.key = key;
     }
 
-    public Status getStatus() {
-        return status;
-    }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-
-    @Exclude
-    public boolean isAberto(){
-        if (status == Aberto){
-            return true;
-        }
-        return false;
-    }
 
     public String getUsuarioEncerramento() {
         return usuarioEncerramento;
@@ -128,21 +112,6 @@ public class Chamado {
 
     public void setUsuarioEncerramento(String usuarioEncerramento) {
         this.usuarioEncerramento = usuarioEncerramento;
-    }
-
-    public enum Status {
-
-        Aberto(0), Fechado(1);
-
-        private final int valor;
-
-        Status(int valor) {
-            this.valor = valor;
-        }
-
-        public int getValor() {
-            return valor;
-        }
     }
 
     @Exclude
@@ -155,10 +124,11 @@ public class Chamado {
         result.put("situacao", situacao);
         result.put("descricao", descricao);
         result.put("key", key);
-        result.put("status", status);
         result.put("usuarioEncerramento", usuarioEncerramento);
 
         return result;
     }
+
+
 
 }

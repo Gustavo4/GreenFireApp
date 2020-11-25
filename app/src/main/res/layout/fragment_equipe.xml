@@ -5,10 +5,13 @@
     android:layout_height="match_parent"
     tools:context=".activity.ui.equipe.EquipeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Equipe" />
+        android:layout_height="wrap_content"
+        android:id="@+id/lv_equipe"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp"
+        android:layout_gravity="center_horizontal|top" />
+
 
 </FrameLayout>

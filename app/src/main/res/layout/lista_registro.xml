@@ -9,27 +9,27 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="20dp">
 
-    <ImageView
-        android:id="@+id/img_chamado_aberto"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        app:srcCompat="@drawable/ic_launcher_background"
-        android:background="@drawable/edit_border"
-        />
+    <TextView
+        android:id="@+id/txt_key_registro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="15dp"
+        android:paddingBottom="20dp"
+        android:text="Código do Chamado:"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/txt_localizacao_chamado_aberto"
+        android:id="@+id/txt_localizacao_registro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Localização"
-        android:paddingBottom="15dp"
-        android:paddingTop="15dp"
-        android:textSize="18sp"
+        android:paddingBottom="20dp"
+        android:textSize="20sp"
         android:textStyle="italic" />
 
     <TextView
-        android:id="@+id/txt_nome_usuario"
+        android:id="@+id/txt_nome_usuario_registro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
@@ -37,7 +37,15 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/txt_situacao"
+        android:id="@+id/txt_fechado_registro"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Fechado por:"
+        android:paddingBottom="10dp"
+        android:textSize="18sp"/>
+
+    <TextView
+        android:id="@+id/txt_situacao_registro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
@@ -45,30 +53,12 @@
         android:textSize="18sp" />
 
     <TextView
-        android:id="@+id/txt_descricao_fgprincipal"
+        android:id="@+id/txt_descricao_registro"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="10dp"
         android:text="Descrição"
         android:textSize="18sp" />
 
-    <TextView
-        android:id="@+id/txt_key"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingBottom="20dp"
-        android:text="Código do Chamado:"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/bt_fechar_chamado"
-        android:layout_width="150dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/bg_button_image"
-        android:text="Fechar Chamado"
-        android:textColor="@android:color/white"
-        android:textStyle="bold" />
 
 </LinearLayout>
