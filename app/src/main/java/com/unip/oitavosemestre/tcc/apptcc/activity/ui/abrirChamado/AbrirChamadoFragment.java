@@ -15,10 +15,12 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -71,6 +73,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -107,6 +111,7 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
     private String descricao;
     private String nomeUsuario;
     private String idUsuarioLogado;
+    private String data;
 
 //    private AddressResultReceiver resultReceiver;
 
@@ -185,6 +190,7 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
         };
 
         btAbrirChamado.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 chamado = new Chamado();
@@ -194,6 +200,11 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
                 }
                 chamado.setSituacao(situacoes);
                 chamado.setImagem(imagemUploaded);
+
+                DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                LocalDateTime now = LocalDateTime.now();
+                data = dateTimeFormatter.format(now);
+                chamado.setData(data);
 
                 if (etDescricao.getText().toString() == null || etDescricao.getText().toString().isEmpty() || localizacao == null || localizacao.isEmpty()){
                     Toast.makeText(getContext(), "Preencha todos os campos!", Toast.LENGTH_LONG).show();
@@ -218,7 +229,8 @@ public class AbrirChamadoFragment extends Fragment implements LocationListener {
                         principalFragment.setArguments(bundle);*/
 
                         FragmentManager fragmentManager = getFragmentManager();
-                        fragmentManager.popBackStackImmediate();
+                        FragmentManager childManager = getChildFragmentManager();
+                        childManager.popBackStackImmediate();
                         FragmentTransaction transaction = fragmentManager.beginTransaction();
                         transaction.replace(R.id.nav_host_fragment, principalFragment, principalFragment.getTag())
                                 .addToBackStack(null).commit();

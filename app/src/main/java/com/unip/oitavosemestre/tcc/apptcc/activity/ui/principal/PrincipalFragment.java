@@ -64,7 +64,10 @@ public class PrincipalFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        chamados = new ArrayList<>();
+        if (chamados != null)
+            chamados.clear();
+        else
+            chamados = new ArrayList<>();
 
         View view = inflater.inflate(R.layout.fragment_principal, container, false);
 
@@ -75,9 +78,6 @@ public class PrincipalFragment extends Fragment {
         valueEventListenerChamados = chamadoReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //Limpar lista
-                    chamados.clear();
-
                     //Listar chamados
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot dados : dataSnapshot.getChildren()) {
@@ -86,10 +86,12 @@ public class PrincipalFragment extends Fragment {
 
                             Chamado chamado = dados.getValue(Chamado.class);
                             chamados.add(chamado);
+
                             adapter = new ChamadoAdapter(getContext(), chamados);
+                            adapter.notifyDataSetChanged();
+
                             listView.setAdapter(adapter);
 
-                            adapter.notifyDataSetChanged();
                         }
                     }
 

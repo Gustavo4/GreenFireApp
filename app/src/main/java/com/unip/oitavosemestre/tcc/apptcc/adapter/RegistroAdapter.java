@@ -51,6 +51,7 @@ public class RegistroAdapter extends ArrayAdapter<RegistroChamado> {
 
             // recupera elemento para exibição
             TextView localizacao = view.findViewById(R.id.txt_localizacao_registro);
+            TextView data = view.findViewById(R.id.txt_data_registro);
             TextView nomeUsuario = view.findViewById(R.id.txt_nome_usuario_registro);
             TextView usuarioEncerramento = view.findViewById(R.id.txt_fechado_registro);
             TextView situacao = view.findViewById(R.id.txt_situacao_registro);
@@ -61,6 +62,7 @@ public class RegistroAdapter extends ArrayAdapter<RegistroChamado> {
 
                 key.setText("Código do Chamado Registrado: " + registroChamado.getKey());
                 localizacao.setText("Localização Registrada: " + registroChamado.getLocalizacao());
+                data.setText("Data Registrada: " + registroChamado.getData());
                 nomeUsuario.setText("Aberto por: " + registroChamado.getNomeUsuario());
                 usuarioEncerramento.setText("Fechado por: " + registroChamado.getUsuarioEncerramento());
                 situacao.setText("Situação Registrada: " + String.valueOf(registroChamado.getSituacao()));

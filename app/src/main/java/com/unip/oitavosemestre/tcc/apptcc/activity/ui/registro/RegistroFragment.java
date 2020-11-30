@@ -1,6 +1,8 @@
 package com.unip.oitavosemestre.tcc.apptcc.activity.ui.registro;
 
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -56,7 +59,6 @@ public class RegistroFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        registroChamados = new ArrayList<>();
 
         View view = inflater.inflate(R.layout.fragment_registro, container, false);
 
@@ -67,7 +69,11 @@ public class RegistroFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //Limpar lista
-                registroChamados.clear();
+                if (registroChamados != null)
+                    registroChamados.clear();
+                else
+                    registroChamados = new ArrayList<>();
+
 
                 //Listar registroChamados
                 if (dataSnapshot.exists()){
@@ -78,12 +84,12 @@ public class RegistroFragment extends Fragment {
                         registroChamados.add(registroChamado);
                         if (registroChamados.size() > 0 && registroChamados != null) {
                             adapter = new RegistroAdapter(getContext(), registroChamados);
+                            adapter.notifyDataSetChanged();
                             listView.setAdapter(adapter);
                         } else {
                             return;
                         }
 
-                        adapter.notifyDataSetChanged();
                     }
                 }
             }

@@ -21,12 +21,14 @@ public class Chamado {
     private String key;
     private Status status;
     private String usuarioEncerramento;
+    private String data;
+
     private DatabaseReference firebase = ConfiguracaoFirebase.getFirebase();
 
     public Chamado() {
     }
 
-    public Chamado(String id, String nomeUsuario, String imagem, String localizacao, Situacao situacao, String descricao, String key, Status status, String usuarioEncerramento) {
+    public Chamado(String id, String nomeUsuario, String imagem, String localizacao, Situacao situacao, String descricao, String key, Status status, String usuarioEncerramento, String data) {
         this.id = id;
         this.nomeUsuario = nomeUsuario;
         this.imagem = imagem;
@@ -36,6 +38,7 @@ public class Chamado {
         this.key = key;
         this.status = status;
         this.usuarioEncerramento = usuarioEncerramento;
+        this.data = data;
     }
 
     public boolean salvar(Chamado chamado){
@@ -104,6 +107,14 @@ public class Chamado {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public void setData(String data) {
+        this.data = data;
     }
 
     public Status getStatus() {
