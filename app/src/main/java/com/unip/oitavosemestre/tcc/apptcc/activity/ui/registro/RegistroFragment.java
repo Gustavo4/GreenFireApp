@@ -83,9 +83,11 @@ public class RegistroFragment extends Fragment {
 
                         registroChamados.add(registroChamado);
                         if (registroChamados.size() > 0 && registroChamados != null) {
-                            adapter = new RegistroAdapter(getContext(), registroChamados);
-                            adapter.notifyDataSetChanged();
-                            listView.setAdapter(adapter);
+                            if (getActivity() != null){
+                                adapter = new RegistroAdapter(getContext(), registroChamados);
+                                adapter.notifyDataSetChanged();
+                                listView.setAdapter(adapter);
+                            }
                         } else {
                             return;
                         }

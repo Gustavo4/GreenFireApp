@@ -59,15 +59,16 @@ public class PrincipalFragment extends Fragment {
         chamadoReference.removeEventListener( valueEventListenerChamados );
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        chamadoReference.addValueEventListener( valueEventListenerChamados );
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        if (chamados != null)
-            chamados.clear();
-        else
-            chamados = new ArrayList<>();
 
         View view = inflater.inflate(R.layout.fragment_principal, container, false);
 
@@ -78,6 +79,12 @@ public class PrincipalFragment extends Fragment {
         valueEventListenerChamados = chamadoReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    if (chamados != null)
+                        chamados.clear();
+                    else
+                        chamados = new ArrayList<>();
+
                     //Listar chamados
                     if (dataSnapshot.exists()) {
                         for (DataSnapshot dados : dataSnapshot.getChildren()) {
@@ -87,10 +94,12 @@ public class PrincipalFragment extends Fragment {
                             Chamado chamado = dados.getValue(Chamado.class);
                             chamados.add(chamado);
 
-                            adapter = new ChamadoAdapter(getContext(), chamados);
-                            adapter.notifyDataSetChanged();
+                            if (getActivity() != null && chamados.size() > 0 && chamados != null) {
+                                adapter = new ChamadoAdapter(getContext(), chamados);
+                                adapter.notifyDataSetChanged();
 
-                            listView.setAdapter(adapter);
+                                listView.setAdapter(adapter);
+                            }
 
                         }
                     }
@@ -102,25 +111,6 @@ public class PrincipalFragment extends Fragment {
 
                 }
             });
-
-       /* listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Intent intent = new Intent(getActivity(), ConversaActivity.class);
-
-                // recupera dados a serem passados
-                Contato contato = contatos.get(position);
-
-                // enviando dados para conversa activity
-                intent.putExtra("nome", contato.getNome() );
-                intent.putExtra("email", contato.getEmail() );
-
-                startActivity(intent);
-
-            }
-        });*/
-
 
         return view;
     }
